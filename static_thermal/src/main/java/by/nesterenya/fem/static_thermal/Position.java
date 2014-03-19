@@ -54,4 +54,26 @@ public class Position {
 		this.angle_z = angle_z;
 	}
 	
+	//TODO сделать обращение через свойства
+	  public void addToZoom(double deltaZoom) {
+	    zoom += deltaZoom;
+	  }
+
+	  public void addToMoveX(double deltaX) {
+	    move_x += deltaX;
+	  }
+
+	  public void addToMoveY(double deltaY) {
+	    move_y += deltaY;
+	  }
+
+	  public void addToAngleX(double deltaX) {
+	    angle_x += deltaX;
+	  }
+
+	  public void addToAngleY(double deltaY) {
+	    angle_y += deltaY;
+	  }
+
+	
 }

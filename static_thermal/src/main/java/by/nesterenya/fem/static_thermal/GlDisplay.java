@@ -31,6 +31,9 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	private DisplayType displayType = DisplayType.MODEL;
 	private Position position = new Position();
 	
+	public Position getPosition() {
+		return position;
+	}
 	
 	public GlDisplay() {
 		 this.addGLEventListener(this);
