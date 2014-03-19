@@ -8,9 +8,13 @@ import java.awt.event.ActionListener;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
+import javax.swing.JTextField;
 import javax.swing.plaf.DimensionUIResource;
+
+import by.nesterenya.fem.primitives.Box;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -57,20 +61,58 @@ public class STModeling implements ActionListener{
 		glDisplay.setMaximumSize(new DimensionUIResource(400, 400));
 		glDisplay.setSize(new DimensionUIResource(200, 200));
 		
+		final JSplitPane splitPane = new JSplitPane();
+		
+		JPanel leftPanel = new JPanel();
+		leftPanel.setLayout(new GridLayout(20, 1, 2, 5));
+		
+		leftPanel.add(new JLabel("Длина пластинки"));
+		final JTextField tb_plateLenght = new JTextField();
+		leftPanel.add(tb_plateLenght);
+		
+		leftPanel.add(new JLabel("Ширина пластинки"));
+		final JTextField tb_plateWidth = new JTextField();
+		leftPanel.add(tb_plateWidth);
+		
+		leftPanel.add(new JLabel("Высота пластинки"));
+		final JTextField tb_plateHeight = new JTextField();
+		leftPanel.add(tb_plateHeight);
+		
+		leftPanel.add(new JLabel("Узлов по OX"));
+		JTextField tb_nodeCountOX = new JTextField();
+		tb_nodeCountOX.setEnabled(false);
+		leftPanel.add(tb_nodeCountOX);
+		
+		leftPanel.add(new JLabel("Узлов по OY"));
+		JTextField tb_nodeCountOY = new JTextField();
+		tb_nodeCountOY.setEnabled(false);
+		leftPanel.add(tb_nodeCountOY);
+		
+		leftPanel.add(new JLabel("Узлов по OZ"));
+		JTextField tb_nodeCountOZ = new JTextField();
+		tb_nodeCountOZ.setEnabled(false);
+		leftPanel.add(tb_nodeCountOZ);
+		
 		JButton btn_disp = new JButton();
 		btn_disp.setText("Draw");
 		btn_disp.addActionListener(new ActionListener() {
 		      public void actionPerformed(ActionEvent arg0) {
-		    	  System.out.print("sdf");
-		          glDisplay.display();
+		          
+		    	  double box_ox = Double.parseDouble(tb_plateLenght.getText());
+		    	  double box_oy = Double.parseDouble(tb_plateWidth.getText());
+		    	  double box_oz = Double.parseDouble(tb_plateHeight.getText());
+		    	  
+		    	  Box box =new Box(box_ox, box_oy, box_oz);
+		    	  glDisplay.setModel(box);
+		    	  glDisplay.display();
 		        }
 		      });
 		
-		final JSplitPane splitPane = new JSplitPane();
+		leftPanel.add(btn_disp);
 		
-		splitPane.setLeftComponent(btn_disp);
+		splitPane.setLeftComponent(leftPanel);
+		
 		JPanel dispPanel = new JPanel();
-		
 		splitPane.setRightComponent(dispPanel);
 		dispPanel.setLayout(new BorderLayout(0, 0));
 		dispPanel.add(glDisplay);
@@ -83,8 +125,4 @@ public class STModeling implements ActionListener{
 		// TODO Auto-generated method stub
 		
 	}
-	
-	
-	
-
 }

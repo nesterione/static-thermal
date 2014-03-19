@@ -5,23 +5,39 @@ import static javax.media.opengl.GL2ES1.GL_PERSPECTIVE_CORRECTION_HINT;
 import static javax.media.opengl.fixedfunc.GLLightingFunc.GL_SMOOTH;
 import static javax.media.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
+import java.nio.FloatBuffer;
+
 import javax.media.opengl.GL;
 import javax.media.opengl.GL2;
 import javax.media.opengl.GL2GL3;
 import javax.media.opengl.GLAutoDrawable;
 import javax.media.opengl.GLEventListener;
 import javax.media.opengl.awt.GLCanvas;
+import javax.media.opengl.fixedfunc.GLLightingFunc;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 
-
+import by.nesterenya.fem.primitives.Box;
+  
 public class GlDisplay extends GLCanvas implements GLEventListener {
 
+	public enum DisplayType {
+	    MODEL, MESH, RESULT, MESHRESULT
+	  };
+	
+	private Box model;
 	private GLU glu;
 	private GL2 gl;
+	private DisplayType displayType = DisplayType.MODEL;
+	private Position position = new Position();
+	
 	
 	public GlDisplay() {
 		 this.addGLEventListener(this);
+		 
+		 //Set start position of scene 
+		 position.setAngle_x(-20);
+		 position.setAngle_y(20);
 	}
 	  
 	/**
@@ -33,7 +49,6 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	public void display(GLAutoDrawable drawable) {
 		//if (analysis == null) return;
 	    //if (displayType == null) return;
-		System.out.println("sd");
 	    gl = drawable.getGL().getGL2();
 
 	    // clear
@@ -55,27 +70,28 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	    gl.glVertex2f(30.0f, -20.0f);
 	    gl.glEnd();
 
+	    
 	    // Сместить в нуть на 30
-	    /*gl.glTranslatef(0.0f, 0.0f, 30.0f);
+	    gl.glTranslatef(0.0f, 0.0f, 30.0f);
 
 	    try {
 	      switch (displayType) {
 	        case MODEL:
-	          plotModel();
+	           if(model!=null) {  plotModel(); }
 	          break;
 	        case MESH:
-	          plotMesh();
+	          //plotMesh();
 	          break;
 	        case RESULT:
-	          plotThermalResult();
+	          //plotThermalResult();
 	          break;
 	        case MESHRESULT:
-	          plotMehResult();
+	          //plotMehResult();
 	          break;
 	      }
 	    } catch (Exception e) {
 	      e.printStackTrace();
-	    }*/
+	    }
 		
 	}
 
@@ -129,4 +145,61 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	    // Сбросить матрицу проекций
 	    gl.glLoadIdentity();
 	}
+
+	public Box getModel() {
+		return model;
+	}
+
+	public void setModel(Box model) {
+		this.model = model;
+	}
+	
+	
+	private void plotModel() {
+
+	    gl.glTranslatef(0.0f, 0.0f, -6.0f);
+	    gl.glScaled(position.getZoom(), position.getZoom(), position.getZoom());
+
+	    // TODO изменить положение камеры правильным образом
+	    // gluLookAt(0.0, 0.0, 25.0, 0.0, 0.0, 0.0, 0.0, 1.0, 0.0);
+
+	    gl.glRotated(position.getAngle_x(), 0.0, 1.0, 0.0);
+	    gl.glRotated(position.getAngle_y(), 1.0, 0.0, 0.0);
+
+	    // Рисуем координатные оси
+	    // TODO перейменовать
+	    GLPrimitives.drawCoordinateSystem(gl);
+
+	    gl.glTranslated(position.getMove_x(), position.getMove_y(), 0);
+
+	    gl.glPushMatrix();
+
+	    // Материал серебро
+	    float ambient[] = {0.0215f, 0.1745f, 0.0215f, 1.0f};
+	    float diffuse[] = {0.07568f, 0.61424f, 0.07568f, 1.0f};
+	    float specular[] = {0.508273f, 0.508273f, 0.508273f, 1.0f};
+	    float shine = 0.4f;
+
+	    gl.glMaterialfv(GL.GL_FRONT, GLLightingFunc.GL_AMBIENT, FloatBuffer.wrap(ambient));
+	    gl.glMaterialfv(GL.GL_FRONT, GLLightingFunc.GL_DIFFUSE, FloatBuffer.wrap(diffuse));
+	    gl.glMaterialfv(GL.GL_FRONT, GLLightingFunc.GL_SPECULAR, FloatBuffer.wrap(specular));
+	    gl.glMaterialf(GL.GL_FRONT, GLLightingFunc.GL_SHININESS, shine * 128.0f);
+
+	    gl.glColor3f(0.83f, 0.83f, 0.83f);
+
+	    // TODO Можно добавить обстрактную фабрику для создания метода геометрии
+	    GLPrimitives.drawBox(gl, model);
+
+	    gl.glColor3f(0.3f, 0.3f, 0.3f);
+	    gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_LINE);
+	    
+	    GLPrimitives.drawBox(gl, model);
+	    gl.glPolygonMode(GL.GL_FRONT_AND_BACK, GL2GL3.GL_FILL);
+
+	    gl.glPopMatrix();
+
+	    // Ждать завершения прорисовки
+	    gl.glFlush();
+	  }
+	
 }
