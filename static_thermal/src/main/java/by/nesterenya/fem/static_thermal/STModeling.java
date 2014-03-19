@@ -18,7 +18,11 @@ import javax.swing.JSplitPane;
 import javax.swing.JTextField;
 import javax.swing.plaf.DimensionUIResource;
 
+import by.nesterenya.fem.mesh.BoxMesher;
+import by.nesterenya.fem.mesh.IMesh;
+import by.nesterenya.fem.mesh.IMesher;
 import by.nesterenya.fem.primitives.Box;
+import by.nesterenya.fem.static_thermal.GlDisplay.DisplayType;
 
 import com.jogamp.opengl.util.FPSAnimator;
 
@@ -114,7 +118,6 @@ public class STModeling implements ActionListener {
 				glDisplay.getPosition().addToZoom(-0.05 * e.getUnitsToScroll());
 			}
 		});
-		;
 
 		final JSplitPane splitPane = new JSplitPane();
 
@@ -134,18 +137,15 @@ public class STModeling implements ActionListener {
 		leftPanel.add(tb_plateHeight);
 
 		leftPanel.add(new JLabel("Узлов по OX"));
-		JTextField tb_nodeCountOX = new JTextField();
-		tb_nodeCountOX.setEnabled(false);
+		final JTextField tb_nodeCountOX = new JTextField();
 		leftPanel.add(tb_nodeCountOX);
 
 		leftPanel.add(new JLabel("Узлов по OY"));
-		JTextField tb_nodeCountOY = new JTextField();
-		tb_nodeCountOY.setEnabled(false);
+		final JTextField tb_nodeCountOY = new JTextField();
 		leftPanel.add(tb_nodeCountOY);
 
 		leftPanel.add(new JLabel("Узлов по OZ"));
-		JTextField tb_nodeCountOZ = new JTextField();
-		tb_nodeCountOZ.setEnabled(false);
+		final JTextField tb_nodeCountOZ = new JTextField();
 		leftPanel.add(tb_nodeCountOZ);
 
 		JButton btn_disp = new JButton();
@@ -156,9 +156,27 @@ public class STModeling implements ActionListener {
 				double box_ox = Double.parseDouble(tb_plateLenght.getText());
 				double box_oy = Double.parseDouble(tb_plateWidth.getText());
 				double box_oz = Double.parseDouble(tb_plateHeight.getText());
-
 				Box box = new Box(box_ox, box_oy, box_oz);
+				
+				//TODO объеденить параметры сетки в одни класс
+				int nodeCountOX =  Integer.parseInt(tb_nodeCountOX.getText());
+				int nodeCountOY =  Integer.parseInt(tb_nodeCountOY.getText());
+				int nodeCountOZ =  Integer.parseInt(tb_nodeCountOZ.getText());
+				
+				IMesher mesher = new BoxMesher(box, nodeCountOX, nodeCountOY, nodeCountOZ);
+				
+				IMesh mesh = null;
+				try {
+					 mesh = mesher.formMesh();
+				} catch (Exception e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				
 				glDisplay.setModel(box);
+				
+				if(mesh != null) { glDisplay.setMesh(mesh); glDisplay.setDisplayType(DisplayType.MESH);}
+				
 				glDisplay.display();
 			}
 		});
