@@ -14,6 +14,7 @@ import javax.media.opengl.awt.GLCanvas;
 import javax.media.opengl.fixedfunc.GLMatrixFunc;
 import javax.media.opengl.glu.GLU;
 
+import by.nesterenya.fem.analysis.ThermalStaticAnalisis;
 import by.nesterenya.fem.mesh.IMesh;
 import by.nesterenya.fem.primitives.Box;
   
@@ -25,6 +26,7 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	
 	private Box model;
 	private IMesh mesh;
+	private ThermalStaticAnalisis analysis;
 	private GLU glu;
 	private GL2 gl;
 	private DisplayType displayType = DisplayType.MODEL;
@@ -93,7 +95,7 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 	        	if(mesh!=null) {  GLPainterHelper.plotMesh(gl, position, mesh); }
 	          break;
 	        case RESULT:
-	          //plotThermalResult();
+	        	if(analysis!=null) {  GLPainterHelper.plotThermalResult(gl, position, analysis); }
 	          break;
 	        case MESHRESULT:
 	          //plotMehResult();
@@ -167,5 +169,13 @@ public class GlDisplay extends GLCanvas implements GLEventListener {
 
 	public void setMesh(IMesh mesh) {
 		this.mesh = mesh;
+	}
+
+	public ThermalStaticAnalisis getAnalysis() {
+		return analysis;
+	}
+
+	public void setAnalysis(ThermalStaticAnalisis analysis) {
+		this.analysis = analysis;
 	}
 }
